@@ -1,7 +1,13 @@
 #include <iostream>
 
+
 int main(){
 
-	std::cout << "What's up?" << std::endl;
+
+	std::string name;
+	std::cout << "Enter your character's name: ";
+	std::getline(std::cin, name);
+	std::cout << "Hello " << name << std::endl;
+	
 
 }
