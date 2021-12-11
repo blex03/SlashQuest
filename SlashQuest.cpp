@@ -6,6 +6,7 @@ void instructions(){
 	using namespace std;
 	
 	cout << endl;
+	cout << "--------------------------------------------------------------" << endl;
 	cout << "INSTRUCTIONS" << endl;
 	cout << "Type in cardinal directions to move (NORTH, WEST, EAST, SOUTH)" << endl;
 	cout << endl;
@@ -16,6 +17,8 @@ void instructions(){
 	cout << ">sell" << endl;
 	cout << endl;
 	cout << "Enter '?' in order to print instructions" << endl;
+	cout << "--------------------------------------------------------------" << endl;
+	cout << endl;
 }
 
 //make words either all uppercase or all lowercase
@@ -28,22 +31,10 @@ std::string lowerCase(std::string command){
 	return command;
 }
 
-namespace room1{
-	int x = 0;
-	int y = 3;
-}
 
-/*
-This is where the player will be able to input commands.
-It will run as long as the user hasn't reached the end of the room.
-The end of the room is specified by the userSpace's parameters
-*/
-void userSpace(int finalX, int finalY){
-	int positionX = 0;
-	int positionY = 0;
+//userSpace is where the player will be able to enter commands
+void userSpace(int& x, int&y){
 	
-	
-	while(positionX != finalX || positionY != finalY){
 		std::string command;
 		
 		std::cout << "\n\n>>> ";
@@ -54,23 +45,56 @@ void userSpace(int finalX, int finalY){
 			instructions();
 		}
 		else if(command == "north"){
-			positionY++;
+			y++;
 		}
 		else if(command == "south"){
-			positionY--;
+			y--;
 		}
 		else if(command == "east"){
-			positionX++;
+			x++;
 		}
 		else if(command == "west"){
+			x--;
+		}
+	
+}
+
+void userSpace(int& x, int& y);
+
+void firstCave(){
+	
+	int positionX = 1;
+	int positionY = 0;
+	
+	while(positionX != 1 || positionY != -1){
+		
+		userSpace(positionX, positionY);
+		
+		if(positionX < 0){
+			std::cout << "You ran into a wall" << std::endl;
+			positionX++;
+		}	
+		
+		if(positionX > 2){
+			std::cout << "You ran into a wall" << std::endl;
 			positionX--;
 		}
 		
+		if(positionY < 0 && positionX != 1){
+			std::cout << "You ran into a wall" << std::endl;
+			positionY++;
+		}
+		
+		if(positionY > 2){
+			std::cout << "You ran into a wall" << std::endl;
+			positionY--;
+		}	
+		
 		std::cout << "X: " << positionX << std::endl;
 		std::cout << "Y: " << positionY << std::endl;
-		
-		
+			
 	}
+	
 }
 
 int main(){
@@ -89,10 +113,12 @@ int main(){
 	
 	instructions();
 	
-	userSpace(room1::x, room1::y);
+	std::cout << "You stand before a cave to your north. You're adventure starts here." << std::endl;
+	
+	firstCave();
 	
 	std::cout << "\nIt worked!!!\n";
 	
-	
+	std::cin.get();
 	
 }
