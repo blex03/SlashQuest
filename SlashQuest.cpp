@@ -23,11 +23,11 @@ int main(){
 	
 	command->instructions();
 	
-	std::cout << "You stand before a cave to your north. Your adventure starts here." << std::endl;
+	std::cout << "You stand before a cave to your north. Your adventure starts here" << std::endl;
 	
 	room->cave();
 	
-	std::cout << "\nIt worked!!!\n";
+	std::cout << "\nIt worked!!!:)\n";
 	
 	std::cin.get();
 	

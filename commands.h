@@ -3,6 +3,10 @@
 #include <string>
 #include <algorithm>
 
+#include "Inventory.h"
+
+inventory* items = new inventory();
+
 
 class commands {
 	public:
@@ -23,9 +27,8 @@ class commands {
 			transform(command.begin(), command.end(), command.begin(), ::tolower);
 			return command;
 		}
-			
+		
 		inline void instructions(){
-			
 			
 			std::cout << std::endl;
 			std::cout << "--------------------------------------------------------------" << std::endl;
@@ -38,6 +41,7 @@ class commands {
 			std::cout << ">buy" << std::endl;
 			std::cout << ">sell" << std::endl;
 			std::cout << std::endl;
+			std::cout << "Enter 'Inventory' in order to open inventory" << std::endl;
 			std::cout << "Enter '?' in order to print instructions" << std::endl;
 			std::cout << "--------------------------------------------------------------" << std::endl;
 			std::cout << std::endl;
@@ -51,7 +55,10 @@ class commands {
 			std::getline(std::cin, command);
 			command = lowerCase(command);
 			
-			if(command == "?"){
+			if (command == "inventory") {
+				items->items();
+			}
+			else if(command == "?"){
 				instructions();
 			}
 			else if(command == "north"){
