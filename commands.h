@@ -46,6 +46,7 @@ class commands {
 			std::cout << "--------------------------------------------------------------" << std::endl;
 			std::cout << std::endl;
 		}	
+		
 		//userSpace is where the player will be able to enter commands
 		inline pos userSpace(int x, int y){
 	
@@ -54,6 +55,7 @@ class commands {
 			std::cout << "\n\n>>> ";
 			std::getline(std::cin, command);
 			command = lowerCase(command);
+			std::cout << std::endl;
 			
 			if (command == "inventory") {
 				items->items();
