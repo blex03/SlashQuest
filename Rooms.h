@@ -50,7 +50,7 @@ public:
 			//Why doesn't "coords == {initial_boundaries[i][0], initial_boundaries[i][1]}" work?
 			for (int i = 0; i < 3; i++) {
 				if (coords.x == initial_boundaries[i][0] && coords.y == initial_boundaries[i][1]) {
-					std::cout << "You try to move that way but your body is drawn towards the cave" << std::endl;
+					std::cout << "You try to move, but your body is drawn towards the northern cave" << std::endl;
 					coords = previous_coords;
 				}
 			}
