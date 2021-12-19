@@ -3,9 +3,9 @@
 #include <string>
 #include <algorithm>
 
-#include "Inventory.h"
+#include "Items.h"
 
-inventory* items = new inventory();
+items* item = new items();
 
 
 class commands {
@@ -13,9 +13,17 @@ class commands {
 		
 		//pos is position
 		struct pos {
-		  int x;
-		  int y;
-		};			
+			int x;
+			int y;
+
+			static pos to_pos(int x, int y) {
+				return { x,y };
+			}
+
+			bool operator==(pos other) {
+				return x == other.x && y == other.y;
+			};
+		};
 				
 		
 		//make words either all uppercase or all lowercase
@@ -57,12 +65,17 @@ class commands {
 			command = lowerCase(command);
 			std::cout << std::endl;
 			
+			//inventory
 			if (command == "inventory") {
-				items->items();
+				item->inventory();
 			}
+
+			//Instructions
 			else if(command == "?"){
 				instructions();
 			}
+
+			//Directions
 			else if(command == "north"){
 				y++;
 			}
@@ -75,10 +88,29 @@ class commands {
 			else if(command == "west"){
 				x--;
 			}
+
+			//Open chest
+			else if (command == "open chest") {
+				if (item->chest_proximity == true) {
+					std::cout << "You opened the chest!" << std::endl;
+					std::cout << "Inside was a sack of coins" << std::endl;
+					std::cout << "You've earned 100g" << std::endl;
+					item->gold_amount += 100;
+					item->cave_chest = true;
+				}
+			}
+
+			else {
+
+				std::cout << "Invalid Command!";
+			}
 		
 			return {x,y};
 		}
 		
-	
+		inline void cave_chest() {
+			
+
+		}
 	
 };

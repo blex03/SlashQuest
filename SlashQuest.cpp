@@ -25,9 +25,17 @@ int main(){
 	
 	std::cout << "You stand before a cave to your north. Your adventure starts here" << std::endl;
 	
-	room->cave();
-	
-	std::cout << "\nIt worked!!!:)\n";
+	while (room->game_play) {
+		if (room->room_status[0] == 1) {
+			room->cave();
+		}
+
+		else if (room->room_status[1] == 1) {
+			room->outside();
+		}
+	}
+
+	std::cout << "\n\nIt worked!!!:)\n";
 	
 	std::cin.get();
 	
