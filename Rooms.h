@@ -12,7 +12,7 @@ private:
 public:
 
 	//So I can continue the while loop in the main function
-	bool game_play = true;
+	bool running = true;
 
 	//This is so I can determine which room to call in the main function
 	int room_status[2] = { 1, 0 };
@@ -29,6 +29,8 @@ public:
 		};
 
 		int wall_boundaries[11][2] = {
+										{0, 0},
+										{2, 0}, 
 										{-1, 1},
 										{-1, 2},
 										{-1, 3},
@@ -57,9 +59,8 @@ public:
 			//---------------------------------------------------------------------
 
 			//Checks if player reached a boundary
-			//Why doesn't "coords == {initial_boundaries[i][0], initial_boundaries[i][1]}" work?
 			for (int i = 0; i < 3; i++) {
-				if (coords == commands::pos::to_pos(initial_boundaries[i][0], initial_boundaries[i][1])) {
+				if (coords == commands::pos::to_pos(initial_boundaries[i][0], initial_boundaries[i][1]) && previous_coords.y < 1) {
 					std::cout << "You try to move, but your body is drawn towards the northern cave" << std::endl;
 					coords = previous_coords;
 				}
@@ -88,14 +89,16 @@ public:
 			//chest
 			if (coords == commands::pos::to_pos(0, 3)) {
 
-				std::cout << "You see a chest in front of you waiting to be opened";
+				std::cout << "You see a chest in front of you" << std::endl;
 
 				item->chest_proximity = true;
 
 				coords = previous_coords;
 			}
 
-
+			if (!(coords == commands::pos::to_pos(0, 2)) && !(coords == commands::pos::to_pos(1, 3))) {
+				item->chest_proximity = false;
+			}
 
 			std::cout << std::endl;
 			std::cout << "                                       X: " << coords.x << std::endl;
@@ -111,7 +114,7 @@ public:
 	inline void outside() {
 
 		std::cout << "You made it outside!";
-		game_play = false;
+		running = false;
 	}
 
 };

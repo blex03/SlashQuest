@@ -91,12 +91,19 @@ class commands {
 
 			//Open chest
 			else if (command == "open chest") {
-				if (item->chest_proximity == true) {
+				if (item->chest_proximity == true && item->cave_chest == false) {
 					std::cout << "You opened the chest!" << std::endl;
 					std::cout << "Inside was a sack of coins" << std::endl;
 					std::cout << "You've earned 100g" << std::endl;
 					item->gold_amount += 100;
 					item->cave_chest = true;
+				}
+				else if (item->chest_proximity == true && item->cave_chest == true) {
+					std::cout << "The chest is empty" << std::endl;
+				}
+
+				else if (item->chest_proximity == false) {
+					std::cout << "What chest?" << std::endl;
 				}
 			}
 
