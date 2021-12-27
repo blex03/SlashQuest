@@ -99,6 +99,9 @@ public:
 			if (!(coords == commands::pos::to_pos(0, 2)) && !(coords == commands::pos::to_pos(1, 3))) {
 				item->chest_proximity = false;
 			}
+			else {
+				item->chest_proximity = true;
+			}
 
 			std::cout << std::endl;
 			std::cout << "                                       X: " << coords.x << std::endl;

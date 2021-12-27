@@ -1,12 +1,10 @@
 #pragma once
 #include <iostream>
-#include <string>
-#include <algorithm>
-
 #include "Items.h"
+#include "TextParsing.h"
 
 items* item = new items();
-
+text* parse = new text();
 
 class commands {
 	public:
@@ -25,17 +23,6 @@ class commands {
 			};
 		};
 				
-		
-		//make words either all uppercase or all lowercase
-		inline std::string upperCase(std::string command){
-			transform(command.begin(), command.end(), command.begin(), ::toupper);
-			return command;
-		}
-		inline std::string lowerCase(std::string command){
-			transform(command.begin(), command.end(), command.begin(), ::tolower);
-			return command;
-		}
-		
 		inline void instructions(){
 			
 			std::cout << std::endl;
@@ -62,35 +49,39 @@ class commands {
 			
 			std::cout << "\n\n>>> ";
 			std::getline(std::cin, command);
-			command = lowerCase(command);
+			command = parse->lowerCase(command);
 			std::cout << std::endl;
 			
+			parse->parsing(command);
+			std::string order = parse->order;
+			std::string object = parse->object;
+			
 			//inventory
-			if (command == "inventory") {
+			if (order == "inventory") {
 				item->inventory();
 			}
 
 			//Instructions
-			else if(command == "?"){
+			else if(order == "?"){
 				instructions();
 			}
 
 			//Directions
-			else if(command == "north"){
+			else if(order == "north"){
 				y++;
 			}
-			else if(command == "south"){
+			else if(order == "south"){
 				y--;
 			}
-			else if(command == "east"){
+			else if(order == "east"){
 				x++;
 			}
-			else if(command == "west"){
+			else if(order == "west"){
 				x--;
 			}
 
 			//Open chest
-			else if (command == "open chest") {
+			else if (order == "open" && object == "chest") {
 				if (item->chest_proximity == true && item->cave_chest == false) {
 					std::cout << "You opened the chest!" << std::endl;
 					std::cout << "Inside was a sack of coins" << std::endl;

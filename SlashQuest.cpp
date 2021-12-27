@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-
 #include "Rooms.h"
+
 
 rooms* room = new rooms();
 commands* command = new commands();
@@ -11,12 +11,12 @@ int main(){
 
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "DECEMBER 19, 2021 \n\n";
+	std::cout << "DECEMBER 27, 2021 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";
 	std::getline(std::cin, name);
-	name = command->upperCase(name);
+	name = parse->upperCase(name);
 	
 	
 	std::cout << "Hello " << name << ", Welcome to Slash Quest" << std::endl;
