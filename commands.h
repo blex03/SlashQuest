@@ -28,7 +28,7 @@ class commands {
 			std::cout << std::endl;
 			std::cout << "--------------------------------------------------------------" << std::endl;
 			std::cout << "INSTRUCTIONS" << std::endl;
-			std::cout << "Type in cardinal directions to move (NORTH, SOUTH, EAST, WEST)" << std::endl;
+			std::cout << "Type in cardinal directions to move (NORTH, SOUTH, EAST, WEST) or (N, S, E, W)" << std::endl;
 			std::cout << std::endl;
 			std::cout << "*List of commands*" << std::endl;
 			std::cout << ">open" << std::endl;
@@ -67,16 +67,16 @@ class commands {
 			}
 
 			//Directions
-			else if(order == "north"){
+			else if(order == "north" || order == "n") {
 				y++;
 			}
-			else if(order == "south"){
+			else if(order == "south" || order == "s"){
 				y--;
 			}
-			else if(order == "east"){
+			else if(order == "east" || order == "e"){
 				x++;
 			}
-			else if(order == "west"){
+			else if(order == "west" || order == "w"){
 				x--;
 			}
 
@@ -98,8 +98,24 @@ class commands {
 						std::cout << "What chest?" << std::endl;
 					}
 				}
+				else if (object == "") {
+					std::cout << "open what?" << std::endl;
+				}
 				else {
-					std::cout << "You can't open a(n) \"" << object << "\" in Slash Quest" << std::endl;
+					std::cout << "You can't open \"" << object << "\" in Slash Quest" << std::endl;
+				}
+			}
+
+			//Use
+			else if (order == "use") {
+				if (object == "placeholder") {
+					std::cout << "Thumbs up" << std::endl;
+				}
+				else if (object == "") {
+					std::cout << "Use what?" << std::endl;
+				}
+				else {
+					std::cout << "You can't use \"" << object << "\" in Slash Quest" << std::endl;
 				}
 			}
 			else {

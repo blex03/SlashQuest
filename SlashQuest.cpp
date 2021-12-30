@@ -11,7 +11,7 @@ int main(){
 
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "DECEMBER 27, 2021 \n\n";
+	std::cout << "DECEMBER 29, 2021 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";
@@ -25,6 +25,8 @@ int main(){
 	
 	std::cout << "You stand before a cave to your north. Your adventure starts here" << std::endl;
 	
+
+	room->setup_map();
 	while (room->running) {
 		if (room->room_status[0] == 1) {
 			room->cave();
