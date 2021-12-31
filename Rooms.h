@@ -16,7 +16,6 @@ private:
 		types id;
 	};
 
-
 public:
 	//So I can continue the while loop in the main function
 	bool running = true;
@@ -39,11 +38,10 @@ public:
 		for (unsigned int y = 0; y < roomSize; y++) {
 			map.push_back(empty_row);
 		}
-		map[0][3] = { CHEST };
+		map[0][4] = { CHEST };
 	}
 	inline void display(commands::pos coords) {
-		std::cout << "(" << coords.x << "," << coords.y << ")";
-		std::cout << "Coins: " << item->gold_amount << std::endl;
+		std::cout << "\nCoins: " << item->gold_amount << std::endl;
 		
 		std::cout << "-";
 		for (unsigned int x = 0; x < roomSize; x++) {
@@ -93,7 +91,7 @@ public:
 	inline void cave() {
 
 		commands::pos coords = { 1, -1 };
-		commands::pos chest = { 0, 3 };
+		commands::pos chest = { 0, 4 };
 		commands::pos exit = { 1, -1 };
 		
 		while (true) {
@@ -109,11 +107,30 @@ public:
 			}
 			//---------------------------------------------------------------------
 
+			//Chest
+			if (coords == commands::pos(chest) && item->cave_chest == false) {
+				std::cout << "You see a chest in front of you" << std::endl;
+				item->chest_proximity = true;
+			}
+			else {
+				item->chest_proximity = false;
+			}
+
+			//Entry
+			if (coords.y == 0 && previous_coords.y < 0) {
+				std::cout << "You entered the cave. You see a chest in the northwest corner" << std::endl;
+			}
+
 			//Checks if player reached a boundary
 			if (coords.x == roomSize || coords.y == roomSize || coords.x < 0 || coords.y < 0) {
-				if ((coords.x == exit.x && coords.y < 0) || (coords.x != exit.x && coords.y < 0 && previous_coords.y < 0)) {
+				if (coords.y < 0 && previous_coords.y < 0) {
 					std::cout << "You try to move that way, but something draws you into the cave" << std::endl;
 					coords = previous_coords;
+				}
+
+				//Exit
+				else if (coords.x == exit.x && coords.y < 0 && previous_coords.y >= 0) {
+					std::cout << "You left the cave" << std::endl;
 				}
 
 				else{
@@ -121,16 +138,16 @@ public:
 					coords = previous_coords;
 				}
 			}
-			display(coords);
 
-			//chest
-			if (coords == commands::pos(chest)) {
-				std::cout << "You see a chest in front of you" << std::endl;
-				item->chest_proximity = true;
+			
+
+			if (coords.y >= 0) {
+				display(coords);
 			}
-			else {
-				item->chest_proximity = false;
-			}
+
+			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
+			
+			
 		}
 
 		room_status[0] = 0;
@@ -143,5 +160,4 @@ public:
 		std::cout << "You made it outside!";
 		running = false;
 	}
-
 };

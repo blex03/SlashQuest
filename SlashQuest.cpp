@@ -11,7 +11,7 @@ int main(){
 
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "DECEMBER 29, 2021 \n\n";
+	std::cout << "DECEMBER 30, 2021 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";

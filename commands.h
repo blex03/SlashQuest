@@ -47,7 +47,7 @@ class commands {
 	
 			std::string command;
 			
-			std::cout << "\n\n>>> ";
+			std::cout << "\n>>> ";
 			std::getline(std::cin, command);
 			command = parse->lowerCase(command);
 			std::cout << std::endl;
@@ -99,7 +99,7 @@ class commands {
 					}
 				}
 				else if (object == "") {
-					std::cout << "open what?" << std::endl;
+					std::cout << "Open what?" << std::endl;
 				}
 				else {
 					std::cout << "You can't open \"" << object << "\" in Slash Quest" << std::endl;
@@ -120,7 +120,7 @@ class commands {
 			}
 			else {
 
-				std::cout << "Invalid Command!";
+				std::cout << "Invalid Command!" << std::endl;
 			}
 		
 			return {x,y};
