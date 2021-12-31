@@ -86,7 +86,7 @@ class commands {
 					if (item->chest_proximity == true && item->cave_chest == false) {
 						std::cout << "You opened the chest!" << std::endl;
 						std::cout << "Inside was a sack of coins" << std::endl;
-						std::cout << "You've earned 100g" << std::endl;
+						std::cout << "You've earned 100G" << std::endl;
 						item->gold_amount += 100;
 						item->cave_chest = true;
 					}
@@ -118,6 +118,18 @@ class commands {
 					std::cout << "You can't use \"" << object << "\" in Slash Quest" << std::endl;
 				}
 			}
+			else if (order == "buy") {
+				if (item->shop == false) {
+					std::cout << "Transactions cannot be made outside of a shop" << std::endl;
+				}
+			}
+
+			else if (order == "sell") {
+				if (item->shop == false) {
+					std::cout << "Transactions cannot be made outside of a shop" << std::endl;
+				}
+			}
+
 			else {
 
 				std::cout << "Invalid Command!" << std::endl;
