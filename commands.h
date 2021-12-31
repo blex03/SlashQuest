@@ -137,10 +137,4 @@ class commands {
 		
 			return {x,y};
 		}
-		
-		inline void cave_chest() {
-			
-
-		}
-	
 };
