@@ -10,7 +10,7 @@ commands* command = new commands();
 int main(){
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "January 3, 2022 \n\n";
+	std::cout << "January 4, 2022 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";
@@ -27,17 +27,24 @@ int main(){
 	std::cout << "You entered the cave. You see a chest in the northwest corner" << std::endl;
 
 	while (room->running) {
-		if (room->room_status[0] == 1) {
+		if (room->room_status == 0) {
 			room->cave();
 		}
 
-		else if (room->room_status[1] == 1) {
+		else if (room->room_status == 1) {
 			room->crossroads();
 		}
 
-		else if (room->room_status[2] == 1) {
-			room->theEnd();
-			break;
+		else if (room->room_status == 2) {
+			room->eastRoom();
+		}
+
+		else if (room->room_status == 3) {
+			room->westRoom();
+		}
+
+		else if (room->room_status == 4) {
+			room->southRoom();
 		}
 	}
 
