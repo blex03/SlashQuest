@@ -3,9 +3,7 @@
 #include <string>
 #include <algorithm>
 
-
 class text {
-
 public:
 
 	//make words either all uppercase or all lowercase
@@ -21,9 +19,7 @@ public:
 	std::string order; //(command phrase)
 	std::string object;//In case user inputs two words ("open CHEST") where chest is the object
 	
-
 	inline void parsing(std::string command){
-		
 		order = "";
 		object = "";
 
@@ -37,8 +33,5 @@ public:
 			}
 			order += command[i];
 		}
-	
 	}
-
-
 };

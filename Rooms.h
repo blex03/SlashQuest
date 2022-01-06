@@ -1,10 +1,8 @@
 #pragma once 
 #include <iostream>
-#include <vector>
 #include "commands.h"
 
 class rooms {
-
 private:
 	commands* command = new commands();
 	
@@ -13,14 +11,16 @@ private:
 		CROSSROADS,
 		EASTROOM,
 		WESTROOM,
-		SOUTHROOM
+		SHOP
 	};
 
 	enum types : int {
 		NONE = 0, 
 		CHEST,
 		WALL, 
-		DOOR
+		DOOR,
+		STORE
+		
 	};
 	struct loot { //just an ID for now, maybe add a new variable for what might be in the chest, or maybe how strong a wall is or something?
 		types id;
@@ -71,23 +71,23 @@ private:
 		std::cout << "   -";
 		for (unsigned int x = 0; x < roomSizeX; x++) {
 			
-			if (north_bound[x].id == NONE) {
-				std::cout << "---";
+			if (north_bound[x].id == DOOR) {
+				std::cout << "| |";
 			}
 
 			else {
-				std::cout << "| |";
+				std::cout << "---";
 			}
 		}
 		std::cout << "-";
 
 		std::cout << std::endl;
 		for (unsigned int y = roomSizeY; y > 0; y--) {
-			if (west_bound[y - 1].id == NONE) {
-				std::cout << "   |";
+			if (west_bound[y - 1].id == DOOR) {
+				std::cout << "  = ";
 			}
 			else {
-				std::cout << "  = ";
+				std::cout << "   |";
 			}
 
 			for (unsigned int x = 0; x < roomSizeX; x++) {
@@ -102,8 +102,10 @@ private:
 					std::cout << "C";
 				}
 				else if (map[x][y - 1].id == WALL) {
-					std::cout << "X";
-					
+					std::cout << "X";	
+				}
+				else if (map[x][y - 1].id == STORE) {
+					std::cout << "S";
 				}
 				
 				else {
@@ -112,11 +114,11 @@ private:
 
 				std::cout << "]";
 			}
-			if (east_bound[y - 1].id == NONE) {
-				std::cout << "|";
+			if (east_bound[y - 1].id == DOOR) {
+				std::cout << " =";
 			}
 			else {
-				std::cout << " =";
+				std::cout << "|";
 			}
 
 			std::cout << std::endl;
@@ -125,12 +127,12 @@ private:
 		std::cout << "   -";
 		for (unsigned int x = 0; x < roomSizeX; x++) {
 
-			if (south_bound[x].id == NONE) {
-				std::cout << "---";
+			if (south_bound[x].id == DOOR) {
+				std::cout << "| |";
 			}
 
 			else {
-				std::cout << "| |";
+				std::cout << "---";
 			}
 		}
 		std::cout << "-";
@@ -328,14 +330,11 @@ public:
 			}
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 		}
-
-		
-
 		if (coords == commands::pos(exit_N)) {
 			room_status = CAVE;
 		}
 		else if (coords == commands::pos(exit_S)) {
-			room_status = SOUTHROOM;
+			room_status = SHOP;
 		}
 		else if (coords == commands::pos(exit_E)) {
 			room_status = EASTROOM;
@@ -343,9 +342,6 @@ public:
 		else {
 			room_status = WESTROOM;
 		}
-		
-
-
 	}
 
 	inline void eastRoom() {
@@ -440,22 +436,27 @@ public:
 		room_status = CROSSROADS;
 	}
 
-	inline void southRoom() {
+	inline void shop() {
 		//Size of room
-		int roomSizeX = 5;
-		int roomSizeY = 5;
+		int roomSizeX = 1;
+		int roomSizeY = 3;
 
 		//For display
 		setup_map(roomSizeX, roomSizeY);
-		north_bound[2] = { DOOR };
+		north_bound[0] = { DOOR };
+		map[0][0] = { STORE };
 
-		commands::pos coords = { 2, 4 };
-		commands::pos exit = { 2, 5 };
+		commands::pos coords = { 0, 2 };
+		commands::pos exit = { 0, 3 };
+		commands::pos store = { 0, 0 };
 
 		while (true) {
-			std::cout << "\n   SOUTHROOM" << std::endl;
-			display(coords, roomSizeX, roomSizeY);
-			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
+			
+			if (item->shop == false) {
+				std::cout << "\n   SHOP" << std::endl;
+				display(coords, roomSizeX, roomSizeY);
+				std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
+			}
 
 			//So player will backtrack when they hit a boundary
 			//Can also compare previous_coords to coords to track direction player is moving
@@ -467,10 +468,25 @@ public:
 				break;
 			}
 			//---------------------------------------------------------------------
+			
+			//STORE
+			if (coords == commands::pos(store)) {
+				item->shop = true;
+				item->inventory();
+				std::cout << "----------------------------" << std::endl;
+				std::cout << "You've Entered Bryan's Shop!" << std::endl;
+				std::cout << "Items for Sale:" << std::endl;
+				for (int i = 0; i < item->store_items.size(); i++) {
+					std::cout << item->store_items[i] << std::endl;
+				}
+				std::cout << "----------------------------\n\n\n\n\n\n\n\n" << std::endl;
+			}
+			else {
+				item->shop = false;
+			}
 
 			//Phrases only display if player has moved
 			if (!(coords == previous_coords)) {
-
 				//Checks if player reached a boundary
 				if (coords.x == roomSizeX || coords.y == roomSizeY || coords.x < 0 || coords.y < 0) {
 
@@ -480,9 +496,8 @@ public:
 					}
 				}
 			}
-			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 		}
-		previous_room = SOUTHROOM;
+		previous_room = SHOP;
 		room_status = CROSSROADS;
 	}
 };

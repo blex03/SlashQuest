@@ -1,8 +1,5 @@
 #include <iostream>
-#include <string>
-#include <algorithm>
 #include "Rooms.h"
-
 
 rooms* room = new rooms();
 commands* command = new commands();
@@ -10,13 +7,12 @@ commands* command = new commands();
 int main(){
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "January 4, 2022 \n\n";
+	std::cout << "January 5, 2022 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";
 	std::getline(std::cin, name);
 	name = parse->upperCase(name);
-	
 	
 	std::cout << "Hello " << name << ", Welcome to Slash Quest" << std::endl;
 	
@@ -44,14 +40,12 @@ int main(){
 		}
 
 		else if (room->room_status == 4) {
-			room->southRoom();
+			room->shop();
 		}
 	}
-
 	std::cout << "\nIt worked!!!:)\n";
 	
 	std::cin.get();
 	
 	return 0;
-	
 }
