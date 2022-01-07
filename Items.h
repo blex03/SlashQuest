@@ -8,6 +8,10 @@ public:
 	//Cave Items
 	bool cave_chest = false;
 	bool chest_proximity = false;
+	
+	//Arrow Dungeon
+	bool arrow_chest = false;
+	bool arrow_chest_proximity = false;
 
 	//Shop
 	bool shop = false;

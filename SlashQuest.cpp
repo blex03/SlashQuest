@@ -7,7 +7,7 @@ commands* command = new commands();
 int main(){
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "January 5, 2022 \n\n";
+	std::cout << "January 7, 2022 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";
@@ -36,7 +36,7 @@ int main(){
 		}
 
 		else if (room->room_status == 3) {
-			room->westRoom();
+			room->arrowDungeon();
 		}
 
 		else if (room->room_status == 4) {

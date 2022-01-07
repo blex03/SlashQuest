@@ -42,6 +42,14 @@ public:
 		std::cout << std::endl;
 	}
 
+	inline void map() {
+		std::cout << "                     Cave" << std::endl;
+		std::cout << "                      ||" << std::endl;
+		std::cout << "  Arrow Dungeon = Crossroads = Dragon's Lair" << std::endl;
+		std::cout << "                      ||" << std::endl;
+		std::cout << "                  Bryan's Shop" << std::endl;
+	}
+
 	//userSpace is where the player will be able to enter commands
 	inline pos userSpace(int x, int y) {
 
@@ -88,13 +96,23 @@ public:
 					std::cout << "Inside was a sack of coins" << std::endl;
 					std::cout << "You've earned 100G" << std::endl;
 					item->gold_amount += 100;
+
+					std::cout << "\nYou also got a map!" << std::endl;
+					item->your_items.push_back("map");
 					item->cave_chest = true;
 				}
-				else if (item->chest_proximity == true && item->cave_chest == true) {
+				else if (item->arrow_chest_proximity == true && item->arrow_chest == false) {
+					std::cout << "The chest is full of coins!" << std::endl;
+					std::cout << "You've earned 500G" << std::endl;
+					item->gold_amount += 500;
+					item->arrow_chest = true;
+				}
+
+				else if ((item->chest_proximity == true && item->cave_chest == true) || (item->arrow_chest_proximity == true && item->arrow_chest == true)) {
 					std::cout << "The chest is empty" << std::endl;
 				}
 
-				else if (item->chest_proximity == false) {
+				else if (item->chest_proximity == false && item->arrow_chest_proximity == false) {
 					std::cout << "What chest?" << std::endl;
 				}
 			}
@@ -108,14 +126,16 @@ public:
 
 		//Use
 		else if (order == "use") {
-			if (object == "placeholder") {
-				std::cout << "Thumbs up" << std::endl;
-			}
-			else if (object == "") {
+			if (object == "") {
 				std::cout << "Use what?" << std::endl;
 			}
+			else if (find(item->your_items.begin(), item->your_items.end(), object) != item->your_items.end()) {
+				if (object == "map") {
+					map();
+				}
+			}
 			else {
-				std::cout << "You can't use \"" << object << "\" in Slash Quest" << std::endl;
+				std::cout << "You don't have that in your inventory" << std::endl;
 			}
 		}
 
@@ -126,7 +146,7 @@ public:
 					if (find(item->store_items.begin(), item->store_items.end(), ">> Shield -- 100G") != item->store_items.end()) {
 						if (item->gold_amount >= 100) {
 							item->store_items.erase(std::remove(item->store_items.begin(), item->store_items.end(), ">> Shield -- 100G"), item->store_items.end());
-							item->your_items.push_back("Shield");
+							item->your_items.push_back("shield");
 							item->gold_amount -= 100;
 						}
 						else {
@@ -142,7 +162,7 @@ public:
 					if (find(item->store_items.begin(), item->store_items.end(), ">> Dragon-Blade -- 600G") != item->store_items.end()) {
 						if (item->gold_amount >= 600) {
 							item->store_items.erase(std::remove(item->store_items.begin(), item->store_items.end(), ">> Dragon-Blade -- 600G"), item->store_items.end());
-							item->your_items.push_back("Dragon-Blade");
+							item->your_items.push_back("dragon-blade");
 							item->gold_amount -= 600;
 						}
 						else {
@@ -166,8 +186,8 @@ public:
 		else if (order == "sell") {
 			if (item->shop == true) {
 				if (object == "shield") {
-					if (find(item->your_items.begin(), item->your_items.end(), "Shield") != item->your_items.end()) {
-						item->your_items.erase(std::remove(item->your_items.begin(), item->your_items.end(), "Shield"), item->your_items.end());
+					if (find(item->your_items.begin(), item->your_items.end(), "shield") != item->your_items.end()) {
+						item->your_items.erase(std::remove(item->your_items.begin(), item->your_items.end(), "shield"), item->your_items.end());
 						item->store_items.push_back(">> Shield -- 100G");
 						item->gold_amount += 100;
 					}
@@ -176,8 +196,8 @@ public:
 					}
 				}
 				else if (object == "dragon-blade") {
-					if (find(item->your_items.begin(), item->your_items.end(), "Dragon-Blade") != item->your_items.end()) {
-						item->your_items.erase(std::remove(item->your_items.begin(), item->your_items.end(), "Dragon-Blade"), item->your_items.end());
+					if (find(item->your_items.begin(), item->your_items.end(), "dragon-blade") != item->your_items.end()) {
+						item->your_items.erase(std::remove(item->your_items.begin(), item->your_items.end(), "dragon-blade"), item->your_items.end());
 						item->store_items.push_back(">> Dragon-Blade -- 600G");
 						item->gold_amount += 600;
 					}
@@ -186,7 +206,7 @@ public:
 					}
 				}
 				else {
-					std::cout << "You don't have any " << object << "s" << std::endl;
+					std::cout << "You can't sell " << object << "s" << std::endl;
 				}
 			}
 			else {

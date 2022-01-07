@@ -10,7 +10,7 @@ private:
 		CAVE,
 		CROSSROADS,
 		EASTROOM,
-		WESTROOM,
+		ARROWDUNGEON,
 		SHOP
 	};
 
@@ -19,7 +19,8 @@ private:
 		CHEST,
 		WALL, 
 		DOOR,
-		STORE
+		STORE,
+		ARROW
 		
 	};
 	struct loot { //just an ID for now, maybe add a new variable for what might be in the chest, or maybe how strong a wall is or something?
@@ -51,23 +52,25 @@ private:
 		}
 
 		//Bounds
-		for (unsigned int y = 0; y < roomSizeY; y++) {
+		for (unsigned int x = 0; x < roomSizeX; x++) {
 			north_bound.push_back({ NONE });
 		}
-		for (unsigned int y = 0; y < roomSizeY; y++) {
+		for (unsigned int x = 0; x < roomSizeX; x++) {
 			south_bound.push_back({ NONE });
 		}
-		for (unsigned int x = 0; x < roomSizeY; x++) {
+		for (unsigned int y = 0; y < roomSizeY; y++) {
 			east_bound.push_back({ NONE });
 		}
-		for (unsigned int x = 0; x < roomSizeY; x++) {
+		for (unsigned int y = 0; y < roomSizeY; y++) {
 			west_bound.push_back({ NONE });
 		}
 	
 	}
 
-	inline void display(commands::pos coords, int roomSizeX, int roomSizeY) {
+	inline bool display(commands::pos coords, int roomSizeX, int roomSizeY) {
 		
+		bool death = false;
+
 		std::cout << "   -";
 		for (unsigned int x = 0; x < roomSizeX; x++) {
 			
@@ -107,6 +110,9 @@ private:
 				else if (map[x][y - 1].id == STORE) {
 					std::cout << "S";
 				}
+				else if (map[x][y - 1].id == ARROW) {
+					std::cout << "->";
+				}
 				
 				else {
 					std::cout << " ";
@@ -138,6 +144,11 @@ private:
 		std::cout << "-";
 		
 		std::cout << std::endl;
+
+		if (map[coords.x][coords.y].id == ARROW) {
+			death = true;
+		}
+		return death;
 	}
 	
 public:
@@ -167,10 +178,11 @@ public:
 			}
 			//---------------------------------------------------------------------
 			
-			//Checks if player reached a boundary
-			if (!(coords == commands::pos(exit))) {
-				std::cout << "You try to move that way, but something draws you into the cave" << std::endl;
-				coords = previous_coords;
+			if (!(coords == previous_coords)) {
+				if (!(coords == commands::pos(exit))) {
+					std::cout << "You try to move that way, but something draws you into the cave" << std::endl;
+					coords = previous_coords;
+				}
 			}
 		}
 	}
@@ -273,7 +285,7 @@ public:
 		if (previous_room == CAVE) {
 			coords = { 1, 2 };
 		}
-		else if (previous_room == WESTROOM) {
+		else if (previous_room == ARROWDUNGEON) {
 			coords = { 0, 1 };
 		}
 		else if (previous_room == EASTROOM) {
@@ -340,7 +352,7 @@ public:
 			room_status = EASTROOM;
 		}
 		else {
-			room_status = WESTROOM;
+			room_status = ARROWDUNGEON;
 		}
 	}
 
@@ -390,22 +402,67 @@ public:
 		room_status = CROSSROADS;
 	}
 
-	inline void westRoom() {
+	inline void arrowDungeon() {
 		//Size of room
-		int roomSizeX = 5;
+		int roomSizeX = 8;
 		int roomSizeY = 5;
+		int arrowX = 0;
+		int arrowY = 2;
 
 		//For display
 		setup_map(roomSizeX, roomSizeY);
 		east_bound[2] = { DOOR };
+		map[0][2] = { CHEST };
+		
 
-		commands::pos coords = { 4, 2 };
-		commands::pos exit = { 5, 2 };
+
+		commands::pos coords = { 7, 2 };
+		commands::pos exit = { 8, 2 };
+		commands::pos chest = { 0, 2 };
 
 		while (true) {
-			std::cout << "\n   WESTROOM" << std::endl;
-			display(coords, roomSizeX, roomSizeY);
+			if (arrowX > 0 && arrowX < 2) {
+				map[arrowX][arrowY] = { ARROW };
+				map[arrowX - 1][arrowY + 1] = { ARROW };
+				map[arrowX - 1][arrowY - 1] = { ARROW };
+			}
+			else if (arrowX >= 2 && arrowX < 8) {
+				map[arrowX][arrowY] = { ARROW };
+				map[arrowX - 1][arrowY + 1] = { ARROW };
+				map[arrowX - 2][arrowY + 2] = { ARROW };
+				map[arrowX - 1][arrowY - 1] = { ARROW };
+				map[arrowX - 2][arrowY - 2] = { ARROW };
+			}
+			else if (arrowX == 8) {
+				map[arrowX - 1][arrowY + 1] = { ARROW };
+				map[arrowX - 2][arrowY + 2] = { ARROW };
+				map[arrowX - 1][arrowY - 1] = { ARROW };
+				map[arrowX - 2][arrowY - 2] = { ARROW };
+			}
+			else if (arrowX == 9) {
+				map[arrowX - 2][arrowY + 2] = { ARROW };
+				map[arrowX - 2][arrowY - 2] = { ARROW };
+
+				arrowX = 1;
+				map[arrowX][arrowY] = { ARROW };
+				map[arrowX - 1][arrowY + 1] = { ARROW };
+				map[arrowX - 1][arrowY - 1] = { ARROW };
+			}
+
+			arrowX += 1;
+
+			std::cout << "\n   ARROW DUNGEON" << std::endl;
+			if (display(coords, roomSizeX, roomSizeY)) {
+				std::cout << "You got hit by an arrow and died...." << std::endl;
+				break;
+			}
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
+
+			setup_map(roomSizeX, roomSizeY); //This is here so map clears arrows
+			east_bound[2] = { DOOR };
+			map[0][2] = { CHEST };
+			
+			
 
 			//So player will backtrack when they hit a boundary
 			//Can also compare previous_coords to coords to track direction player is moving
@@ -421,6 +478,14 @@ public:
 			//Phrases only display if player has moved
 			if (!(coords == previous_coords)) {
 
+				//Chest
+				if (coords == commands::pos(chest)) {
+					item->arrow_chest_proximity = true;
+					std::cout << "You see a chest in front of you" << std::endl;
+				}
+				else {
+					item->arrow_chest_proximity = false;
+				}
 				//Checks if player reached a boundary
 				if (coords.x == roomSizeX || coords.y == roomSizeY || coords.x < 0 || coords.y < 0) {
 
@@ -430,9 +495,10 @@ public:
 					}
 				}
 			}
+
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 		}
-		previous_room = WESTROOM;
+		previous_room = ARROWDUNGEON;
 		room_status = CROSSROADS;
 	}
 
