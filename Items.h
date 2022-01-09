@@ -12,7 +12,7 @@ public:
 	//Arrow Dungeon
 	bool arrow_chest = false;
 	bool arrow_chest_proximity = false;
-	bool death = false;
+	bool end = false;
 
 	//Shop
 	bool shop = false;

@@ -14,7 +14,7 @@ int main(){
 	std::getline(std::cin, name);
 	name = parse->upperCase(name);
 	
-	std::cout << "Hello " << name << ", Welcome to Slash Quest" << std::endl;
+	std::cout << "\nHello " << name << ", Welcome to Slash Quest.\nIt is your quest to slay the evil dragon! " << std::endl;
 	
 	command->instructions();
 	
@@ -28,14 +28,14 @@ int main(){
 		}
 
 		else if (room->room_status == 1) {
-			if (item->death) {
+			if (item->end) {
 				break;
 			}
 			room->crossroads();
 		}
 
 		else if (room->room_status == 2) {
-			room->eastRoom();
+			room->dragonsRoom();
 		}
 
 		else if (room->room_status == 3) {

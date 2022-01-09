@@ -9,7 +9,7 @@ private:
 	enum areas : int {
 		CAVE,
 		CROSSROADS,
-		EASTROOM,
+		DRAGONSROOM,
 		ARROWDUNGEON,
 		SHOP
 	};
@@ -21,7 +21,9 @@ private:
 		DOOR,
 		STORE,
 		ARROW,
-		SHIELD
+		SHIELD,
+		DRAGON,
+		FIRE
 		
 	};
 	struct loot { //just an ID for now, maybe add a new variable for what might be in the chest, or maybe how strong a wall is or something?
@@ -117,6 +119,9 @@ private:
 				else if (map[x][y - 1].id == SHIELD) {
 					std::cout << "#";
 				}
+				else if (map[x][y - 1].id == FIRE && map[x][y - 1].id != SHIELD) {
+					std::cout << "0";
+				}
 				
 				else {
 					std::cout << " ";
@@ -126,6 +131,9 @@ private:
 			}
 			if (east_bound[y - 1].id == DOOR) {
 				std::cout << " =";
+			}
+			else if (east_bound[y - 1].id == DRAGON) {
+				std::cout << " ]--===============";
 			}
 			else {
 				std::cout << "|";
@@ -156,7 +164,7 @@ private:
 				}
 			}
 
-			if (map[coords.x][coords.y].id == ARROW) {
+			if (map[coords.x][coords.y].id == ARROW || map[coords.x][coords.y].id == FIRE) {
 				death = true;
 			}
 		}
@@ -304,7 +312,7 @@ public:
 		else if (previous_room == ARROWDUNGEON) {
 			coords = { 0, 1 };
 		}
-		else if (previous_room == EASTROOM) {
+		else if (previous_room == DRAGONSROOM) {
 			coords = { 2, 1 };
 		}
 		else {
@@ -369,28 +377,104 @@ public:
 			room_status = SHOP;
 		}
 		else if (coords == commands::pos(exit_E)) {
-			room_status = EASTROOM;
+			room_status = DRAGONSROOM;
 		}
 		else {
 			room_status = ARROWDUNGEON;
 		}
 	}
 
-	inline void eastRoom() {
-		int roomSizeX = 5;
+	inline void dragonsRoom() {
+		int roomSizeX = 10;
 		int roomSizeY = 5;
+		int fireX1 = 9;
+		int fireX2 = 13;
+		int fireY = 2;
+		
 
 		setup_map(roomSizeX, roomSizeY);
 		west_bound[2] = { DOOR };
+		east_bound[2] = { DRAGON };
 		
 		commands::pos coords = { 0, 2 };
 		commands::pos previous_coords = { 10, 10 };
 		commands::pos exit = { -1, 2 };
+		commands::pos kill_spot = { 9, 2 };
 
 		while (true) {
-			std::cout << "\n   EASTROOM" << std::endl;
-			display(coords, previous_coords, roomSizeX, roomSizeY);
-			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
+			//Fireballs
+			if (fireX1 <= 9 && fireX1 >= 0) {
+				map[fireX1][fireY] = { FIRE };
+				map[fireX1][fireY + 1] = { FIRE };
+				map[fireX1][fireY + 2] = { FIRE };
+			}
+			if (fireX1 <= 8 && fireX1 >= -1) {
+				map[fireX1 + 1][fireY] = { FIRE };
+				map[fireX1 + 1][fireY + 1] = { FIRE };
+				map[fireX1 + 1][fireY + 2] = { FIRE };
+			}
+			if (fireX1 <= 7 && fireX1 >= -2) {
+				map[fireX1 + 2][fireY] = { FIRE };
+				map[fireX1 + 2][fireY + 1] = { FIRE };
+				map[fireX1 + 2][fireY + 2] = { FIRE };
+			}
+			if (fireX1 <= -1) {
+				map[fireX1 + 10][fireY] = { FIRE };
+				map[fireX1 + 10][fireY + 1] = { FIRE };
+				map[fireX1 + 10][fireY + 2] = { FIRE };
+			}
+			if (fireX1 == -2) {
+				map[fireX1 + 11][fireY] = { FIRE };
+				map[fireX1 + 11][fireY + 1] = { FIRE };
+				map[fireX1 + 11][fireY + 2] = { FIRE };
+			}
+			if (fireX2 <= 9 && fireX2 >= 0) {
+				map[fireX2][fireY] = { FIRE };
+				map[fireX2][fireY - 1] = { FIRE };
+				map[fireX2][fireY - 2] = { FIRE };
+			}
+			if (fireX2 <= 8 && fireX2 >= -1) {
+				map[fireX2 + 1][fireY] = { FIRE };
+				map[fireX2 + 1][fireY - 1] = { FIRE };
+				map[fireX2 + 1][fireY - 2] = { FIRE };
+			}
+			if (fireX2 <= 7 && fireX2 >= -2) {
+				map[fireX2 + 2][fireY] = { FIRE };
+				map[fireX2 + 2][fireY - 1] = { FIRE };
+				map[fireX2 + 2][fireY - 2] = { FIRE };
+			}
+			if (fireX2 <= -1) {
+				map[fireX2 + 10][fireY] = { FIRE };
+				map[fireX2 + 10][fireY - 1] = { FIRE };
+				map[fireX2 + 10][fireY - 2] = { FIRE };
+			}
+			if (fireX2 == -2) {
+				map[fireX2 + 11][fireY] = { FIRE };
+				map[fireX2 + 11][fireY - 1] = { FIRE };
+				map[fireX2 + 11][fireY - 2] = { FIRE };
+			}
+			
+			fireX1 -= 1;
+			fireX2 -= 1;
+
+			if (fireX1 == -3) {
+				fireX1 = 7;
+			}
+			if (fireX2 == -3) {
+				fireX2 = 7;
+			}
+
+			//Shield
+			if (item->shield) {
+				map[coords.x][coords.y] = { SHIELD };
+			}
+
+			std::cout << "\n   DRAGON'S LAIR" << std::endl;
+			if (display(coords, previous_coords, roomSizeX, roomSizeY)) {
+				std::cout << "You got burnt to a crisp and died....\n\n\n\n\n\n\n\n" << std::endl;
+				item->end = true;
+				break;
+			}
 
 			item->shield = false;
 			map[coords.x][coords.y] = { NONE };
@@ -398,16 +482,22 @@ public:
 			previous_coords = coords;
 			coords = command->userSpace(coords.x, coords.y);
 
-			//Shield
-			if (item->shield) {
-				map[coords.x][coords.y] = { SHIELD };
-			}
+			setup_map(roomSizeX, roomSizeY);
+			west_bound[2] = { DOOR };
+			east_bound[2] = { DRAGON };
 
 			//End while loop with this condition-----------------------------------
 			if (coords == commands::pos(exit)) {
 				break;
 			}
 			//---------------------------------------------------------------------
+
+			//Kill Dragon
+			if (coords == commands::pos(kill_spot) && item->dragon_blade) {
+				std::cout << "You slayed the Dragon!!!!!\n\nYOU WIN\n\n\n\n\n" << std::endl;
+				item->end = true;
+				break;
+			}
 
 			if (!(coords == previous_coords)) {
 
@@ -420,7 +510,7 @@ public:
 				}
 			}
 		}
-		previous_room = EASTROOM;
+		previous_room = DRAGONSROOM;
 		room_status = CROSSROADS;
 	}
 
@@ -478,7 +568,7 @@ public:
 			std::cout << "\n   ARROW DUNGEON" << std::endl;
 			if (display(coords, previous_coords, roomSizeX, roomSizeY)) {
 				std::cout << "You got hit by an arrow and died....\n\n\n\n\n\n\n\n" << std::endl;
-				item->death = true;
+				item->end = true;
 				break;
 			}
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";

@@ -136,6 +136,9 @@ public:
 				if (object == "shield") {
 					item->shield = true;
 				}
+				if (object == "dragon-blade") {
+					item->dragon_blade = true;
+				}
 			}
 			else {
 				std::cout << "You don't have that in your inventory" << std::endl;
