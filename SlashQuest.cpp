@@ -7,7 +7,7 @@ commands* command = new commands();
 int main(){
 	//Introduction
 	std::cout << "SLASH QUEST - BRYAN LECZA" << std::endl;
-	std::cout << "January 8, 2022 \n\n";
+	std::cout << "January 9, 2022 \n\n";
 	
 	std::string name;
 	std::cout << "Enter your character's name: ";
