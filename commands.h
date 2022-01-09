@@ -133,6 +133,9 @@ public:
 				if (object == "map") {
 					map();
 				}
+				if (object == "shield") {
+					item->shield = true;
+				}
 			}
 			else {
 				std::cout << "You don't have that in your inventory" << std::endl;

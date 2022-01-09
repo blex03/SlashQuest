@@ -20,7 +20,8 @@ private:
 		WALL, 
 		DOOR,
 		STORE,
-		ARROW
+		ARROW,
+		SHIELD
 		
 	};
 	struct loot { //just an ID for now, maybe add a new variable for what might be in the chest, or maybe how strong a wall is or something?
@@ -67,7 +68,7 @@ private:
 	
 	}
 
-	inline bool display(commands::pos coords, int roomSizeX, int roomSizeY) {
+	inline bool display(commands::pos coords, commands::pos previous_coords, int roomSizeX, int roomSizeY) {
 		
 		bool death = false;
 
@@ -95,7 +96,7 @@ private:
 
 			for (unsigned int x = 0; x < roomSizeX; x++) {
 				std::cout << "[";
-				if (coords == commands::pos::to_pos(x, y - 1)) {
+				if (coords == commands::pos::to_pos(x, y - 1) && map[coords.x][coords.y].id != SHIELD) {
 					std::cout << "P";
 					if (map[x][y - 1].id != NONE) {
 						std::cout << "*";
@@ -110,8 +111,11 @@ private:
 				else if (map[x][y - 1].id == STORE) {
 					std::cout << "S";
 				}
-				else if (map[x][y - 1].id == ARROW) {
+				else if (map[x][y - 1].id == ARROW && map[x][y - 1].id != SHIELD) {
 					std::cout << "->";
+				}
+				else if (map[x][y - 1].id == SHIELD) {
+					std::cout << "#";
 				}
 				
 				else {
@@ -145,9 +149,18 @@ private:
 		
 		std::cout << std::endl;
 
-		if (map[coords.x][coords.y].id == ARROW) {
-			death = true;
+		if (map[coords.x][coords.y].id != SHIELD) {
+			if (coords.x < roomSizeX - 1) {
+				if (map[coords.x + 1][coords.y].id == ARROW && map[previous_coords.x][previous_coords.y].id == ARROW) {
+					death = true;
+				}
+			}
+
+			if (map[coords.x][coords.y].id == ARROW) {
+				death = true;
+			}
 		}
+
 		return death;
 	}
 	
@@ -156,7 +169,6 @@ public:
 	bool running = true;
 
 	//This is so I can determine which room to call in the main function
-	
 	areas room_status = CAVE;
 	areas previous_room;
 
@@ -200,6 +212,7 @@ public:
 		south_bound[1] = { DOOR };
 								  
 		commands::pos coords = { 1, 0 };
+		commands::pos previous_coords = { 10, 10 };
 		commands::pos chest = { 0, 2 };
 		commands::pos exit = { 1, -1 };
 		commands::pos walls[1] = { 2, 2 };
@@ -207,12 +220,20 @@ public:
 		while (true) {
 
 			std::cout << "\n   CAVE" << std::endl;
-			display(coords, caveSizeX, caveSizeY);
+			display(coords, previous_coords, caveSizeX, caveSizeY);
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
-			//So player will backtrack when they hit a boundary
-			//Can also compare previous_coords to coords to track direction player is moving
-			commands::pos previous_coords = coords;
+			
+			item->shield = false;
+			map[coords.x][coords.y] = { NONE };
+			map[0][2] = { CHEST };
+			
+			previous_coords = coords;
 			coords = command->userSpace(coords.x, coords.y);
+
+			//Shield
+			if (item->shield) {
+				map[coords.x][coords.y] = { SHIELD };
+			}
 
 			//End while loop with this condition-----------------------------------
 			if (coords == commands::pos::to_pos(1, -1) && item->cave_chest == true) {
@@ -255,20 +276,15 @@ public:
 					}
 				}
 			}
-			
-			
-			
 		}
 		previous_room = CAVE;
 		room_status = CROSSROADS;
 	}
 
 	inline void crossroads() {
-		//Size of room
 		int roomSizeX = 3;
 		int roomSizeY = 3;
 
-		//For display
 		setup_map(roomSizeX, roomSizeY);
 		map[0][0] = { WALL };
 		map[2][0] = { WALL };
@@ -295,6 +311,7 @@ public:
 			coords = { 1, 0 };
 		}
 
+		commands::pos previous_coords = { 10, 10 };
 		commands::pos exit_N = { 1, 3 };
 		commands::pos exit_S = { 1, -1 };
 		commands::pos exit_E = { 3, 1 };
@@ -307,13 +324,19 @@ public:
 								};
 		while (true) {
 			std::cout << "\n   CROSSROADS" << std::endl;
-			display(coords, roomSizeX, roomSizeY);
+			display(coords, previous_coords, roomSizeX, roomSizeY);
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 
-			//So player will backtrack when they hit a boundary
-			//Can also compare previous_coords to coords to track direction player is moving
-			commands::pos previous_coords = coords;
+			item->shield = false;
+			map[coords.x][coords.y] = { NONE };
+
+			previous_coords = coords;
 			coords = command->userSpace(coords.x, coords.y);
+
+			//Shield
+			if (item->shield) {
+				map[coords.x][coords.y] = { SHIELD };
+			}
 
 			//End while loop with this condition-----------------------------------
 			if (coords == commands::pos(exit_S) || coords == commands::pos(exit_N) || coords == commands::pos(exit_E) || coords == commands::pos(exit_W)) {
@@ -321,10 +344,8 @@ public:
 			}
 			//---------------------------------------------------------------------
 
-			//Phrases only display if player has moved
 			if (!(coords == previous_coords)) {
 				
-				//Checks if player reached a boundary
 				if (coords.x == roomSizeX || coords.y == roomSizeY || coords.x < 0 || coords.y < 0) {
 					
 					if (!(coords == commands::pos(exit_S) || coords == commands::pos(exit_N) || coords == commands::pos(exit_E))) {
@@ -340,7 +361,6 @@ public:
 					}
 				}
 			}
-			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 		}
 		if (coords == commands::pos(exit_N)) {
 			room_status = CAVE;
@@ -357,26 +377,31 @@ public:
 	}
 
 	inline void eastRoom() {
-		//Size of room
 		int roomSizeX = 5;
 		int roomSizeY = 5;
 
-		//For display
 		setup_map(roomSizeX, roomSizeY);
 		west_bound[2] = { DOOR };
 		
 		commands::pos coords = { 0, 2 };
+		commands::pos previous_coords = { 10, 10 };
 		commands::pos exit = { -1, 2 };
 
 		while (true) {
 			std::cout << "\n   EASTROOM" << std::endl;
-			display(coords, roomSizeX, roomSizeY);
+			display(coords, previous_coords, roomSizeX, roomSizeY);
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 
-			//So player will backtrack when they hit a boundary
-			//Can also compare previous_coords to coords to track direction player is moving
-			commands::pos previous_coords = coords;
+			item->shield = false;
+			map[coords.x][coords.y] = { NONE };
+
+			previous_coords = coords;
 			coords = command->userSpace(coords.x, coords.y);
+
+			//Shield
+			if (item->shield) {
+				map[coords.x][coords.y] = { SHIELD };
+			}
 
 			//End while loop with this condition-----------------------------------
 			if (coords == commands::pos(exit)) {
@@ -384,10 +409,8 @@ public:
 			}
 			//---------------------------------------------------------------------
 
-			//Phrases only display if player has moved
 			if (!(coords == previous_coords)) {
 
-				//Checks if player reached a boundary
 				if (coords.x == roomSizeX || coords.y == roomSizeY || coords.x < 0 || coords.y < 0) {
 
 					if (!(coords == commands::pos(exit))) {
@@ -396,27 +419,23 @@ public:
 					}
 				}
 			}
-			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 		}
 		previous_room = EASTROOM;
 		room_status = CROSSROADS;
 	}
 
 	inline void arrowDungeon() {
-		//Size of room
 		int roomSizeX = 8;
 		int roomSizeY = 5;
 		int arrowX = 0;
 		int arrowY = 2;
 
-		//For display
 		setup_map(roomSizeX, roomSizeY);
 		east_bound[2] = { DOOR };
 		map[0][2] = { CHEST };
 		
-
-
 		commands::pos coords = { 7, 2 };
+		commands::pos previous_coords = { 10, 10 };
 		commands::pos exit = { 8, 2 };
 		commands::pos chest = { 0, 2 };
 
@@ -451,22 +470,27 @@ public:
 
 			arrowX += 1;
 
+			//Shield
+			if (item->shield) {
+				map[coords.x][coords.y] = { SHIELD };
+			}
+
 			std::cout << "\n   ARROW DUNGEON" << std::endl;
-			if (display(coords, roomSizeX, roomSizeY)) {
-				std::cout << "You got hit by an arrow and died...." << std::endl;
+			if (display(coords, previous_coords, roomSizeX, roomSizeY)) {
+				std::cout << "You got hit by an arrow and died....\n\n\n\n\n\n\n\n" << std::endl;
+				item->death = true;
 				break;
 			}
 			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
+
+			item->shield = false;
+			map[coords.x][coords.y] = { NONE };
 
 			setup_map(roomSizeX, roomSizeY); //This is here so map clears arrows
 			east_bound[2] = { DOOR };
 			map[0][2] = { CHEST };
 			
-			
-
-			//So player will backtrack when they hit a boundary
-			//Can also compare previous_coords to coords to track direction player is moving
-			commands::pos previous_coords = coords;
+			previous_coords = coords;
 			coords = command->userSpace(coords.x, coords.y);
 
 			//End while loop with this condition-----------------------------------
@@ -475,7 +499,6 @@ public:
 			}
 			//---------------------------------------------------------------------
 
-			//Phrases only display if player has moved
 			if (!(coords == previous_coords)) {
 
 				//Chest
@@ -486,7 +509,7 @@ public:
 				else {
 					item->arrow_chest_proximity = false;
 				}
-				//Checks if player reached a boundary
+
 				if (coords.x == roomSizeX || coords.y == roomSizeY || coords.x < 0 || coords.y < 0) {
 
 					if (!(coords == commands::pos(exit))) {
@@ -495,24 +518,21 @@ public:
 					}
 				}
 			}
-
-			std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 		}
 		previous_room = ARROWDUNGEON;
 		room_status = CROSSROADS;
 	}
 
 	inline void shop() {
-		//Size of room
 		int roomSizeX = 1;
 		int roomSizeY = 3;
 
-		//For display
 		setup_map(roomSizeX, roomSizeY);
 		north_bound[0] = { DOOR };
 		map[0][0] = { STORE };
 
 		commands::pos coords = { 0, 2 };
+		commands::pos previous_coords = { 10, 10 };
 		commands::pos exit = { 0, 3 };
 		commands::pos store = { 0, 0 };
 
@@ -520,14 +540,21 @@ public:
 			
 			if (item->shop == false) {
 				std::cout << "\n   SHOP" << std::endl;
-				display(coords, roomSizeX, roomSizeY);
+				display(coords, previous_coords, roomSizeX, roomSizeY);
 				std::cout << "\n                 (" << coords.x << "," << coords.y << ")\n\n";
 			}
 
-			//So player will backtrack when they hit a boundary
-			//Can also compare previous_coords to coords to track direction player is moving
-			commands::pos previous_coords = coords;
+			item->shield = false;
+			map[coords.x][coords.y] = { NONE };
+			map[0][0] = { STORE };
+
+			previous_coords = coords;
 			coords = command->userSpace(coords.x, coords.y);
+
+			//Shield
+			if (item->shield) {
+				map[coords.x][coords.y] = { SHIELD };
+			}
 
 			//End while loop with this condition-----------------------------------
 			if (coords == commands::pos(exit)) {
@@ -551,9 +578,8 @@ public:
 				item->shop = false;
 			}
 
-			//Phrases only display if player has moved
 			if (!(coords == previous_coords)) {
-				//Checks if player reached a boundary
+
 				if (coords.x == roomSizeX || coords.y == roomSizeY || coords.x < 0 || coords.y < 0) {
 
 					if (!(coords == commands::pos(exit))) {

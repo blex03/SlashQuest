@@ -12,6 +12,7 @@ public:
 	//Arrow Dungeon
 	bool arrow_chest = false;
 	bool arrow_chest_proximity = false;
+	bool death = false;
 
 	//Shop
 	bool shop = false;
@@ -20,6 +21,9 @@ public:
 	int gold_amount = 0;
 	std::vector<std::string> store_items = { ">> Shield -- 100G", ">> Dragon-Blade -- 600G" };
 	std::vector<std::string> your_items;
+
+	bool shield = false;
+	bool dragon_blade = false;
 
 	inline void inventory() {
 		std::cout << "-------------" << std::endl;
